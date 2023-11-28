@@ -5,7 +5,6 @@
 #include <termios.h>
 #include <unistd.h>
 
-const char *RECORDS = "./data/records.txt";
 const char *USERS = "./data/users.txt";
 
 /* function: promptPassword
@@ -25,7 +24,7 @@ void promptPassword(char pass[50], char *text) {
     perror("tcsetattr");
     return exit(1);
   }
-  printf("\n\n\n\n\n\t\t\t\t%s: ", text);
+  printf("\n\n\n\n\n\t\t  %s: \n\t\t\t", text);
   scanf("%50s", pass);
 
   // restore terminal
@@ -40,7 +39,7 @@ void promptPassword(char pass[50], char *text) {
  *  Prompts the user with all the questions to create a new User,
  *  if everything is okay, it saves it to a specific file.
  * */
-void registerMenu(void) {
+bool registerMenu(void) {
   struct User u = {0};
 
   char username[50];
@@ -50,11 +49,10 @@ void registerMenu(void) {
   FILE *file = fopen(USERS, "r+");
 
   system("clear");
-
 usernamePrompt:
   printf("\n\n\t\t======== ATM ========\n\n");
   printf("\n\t\t\tRegister\n\n");
-  printf("\t\tPlease provide a Username: ");
+  printf("\t\tPlease provide a Username: \n\t\t\t");
   scanf("%50s", u.name);
 
   if (strcmp(u.name, "") == 0) {
@@ -70,17 +68,24 @@ usernamePrompt:
   }
 
 passwordPrompt:
+  printf("%s\n", u.name);
   promptPassword(u.password, "Choose a new password");
   promptPassword(checkPassword, "Verifie your password");
+  printf("--");
 
   if (strcmp(u.password, checkPassword) != 0 || strcmp(u.password, "") == 0) {
-    printf("\nThe password check mismatched, press 1 to try again or "
+    printf("\nThe password check mismatched, press 1 to try again, 2 to "
+           "restart Registering, 3 to go back to main menu or "
            "any other key to exit\n");
     scanf(" %s", &input);
 
     switch (input) {
     case '1':
       goto passwordPrompt;
+    case '2':
+      goto usernamePrompt;
+    case '3':
+      return false;
     default:
       exit(1);
     }
@@ -90,6 +95,7 @@ passwordPrompt:
   }
 
   fclose(file);
+  return true;
 }
 
 /* function: loginMenu
@@ -107,6 +113,9 @@ bool loginMenu(struct User *u) {
   scanf("%s", u->name);
 
   promptPassword(u->password, "Enter the password to login");
+  // printf("userExist= %s\n", userExist(file, u->name) ? "true" : "false");
+  // printf("passCorrect= %s\n",
+  // passCorrect(file, u->password) ? "true" : "false");
   if (userExist(file, u->name) && passCorrect(file, u->password)) {
     res = true;
   }

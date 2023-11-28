@@ -37,12 +37,14 @@ bool userExist(FILE *file, char *name);
 bool passCorrect(FILE *file, char *pass);
 void getUserFromFile(FILE *file, struct User *u, char *name);
 void saveUserToFile(FILE *file, struct User u);
+void createNewAcc(struct User u);
+void checkAllAccounts(struct User u);
 int getNewID(FILE *file);
 
 // Authentication Funcctions
 // bool loginMenu(char a[50], char pass[50]);
 bool loginMenu(struct User *u);
-void registerMenu(void);
+bool registerMenu(void);
 
 // Account Functions
 void mainMenu(struct User u);
